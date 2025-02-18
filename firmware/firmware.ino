@@ -8,7 +8,7 @@
 
   Reads the Serial data from the radio and outputs the current transmitting band in BCD format as used by Yaesu.
 
-  The following Band Plan is used for determining the Band
+  The following Band Plan is used for determining the Band, this is based on the UK Band Plan
 
   Frequency (Mhz)       Band
   ---------------------------
