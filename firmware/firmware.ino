@@ -37,7 +37,8 @@
   change log:
   Version 1.0 | 16 Feb 2025
               - Initial Version, based on UK Band Plan
-
+  Version 1.1 | 18 Feb 2025
+              - Added Tracking of last band output to avoid unneccesary updates to output pins
 */
 
 // Enable Debug Mode, uncomment to enable debug statements
@@ -53,14 +54,11 @@
 #define BCDOutput_C 25 // BCD Output C Pin
 #define BCDOutput_D 26 // BCD Output D Pin
 
-
-static const unsigned long RECONNECT_INTERVAL = 1000; // ms
-static unsigned long lastReconnectTime = 0;
-
 static int TXVFO = 0; // Our Transmitting VFO, 0 = VFO A, 1 = VFO B
 static long VFOACurrentFreq = 0; // Our current VFO A frequency in hz
 static long VFOBCurrentFreq = 0; // Our current VFO B frequency in hz
 static long CurrentFreq = 0; // Our current transmit frequency in hz
+static int CurrentBand = 0; // The current band we're outputting
 
 static bool ConnectPollingActive = false; // Are we polling to reconnect
 static bool PolledForData = false; // Have we actively polled for data, resets to false if data is received
@@ -72,7 +70,7 @@ static const unsigned long LAST_COMMAND_TIMEOUT = 10000; // ms How long without 
 static const unsigned long LAST_CONNECT_POLL_TIMEOUT = 1000; // ms How often to attempt to reconnect
 
 #ifdef DEBUG
-static unsigned long FlashLED = 0; // The time since the last command was received
+static unsigned long FlashLED = 0; // Used for the flashing LED Debug Status
 #endif
 
 void setup() {
@@ -132,6 +130,7 @@ void ResetSerialAndOutputs()
   VFOACurrentFreq = 0;
   VFOBCurrentFreq = 0;
   CurrentFreq = 0;
+  CurrentBand = 0;
 
   // Set all pins to low to ensure no output until we know what to output
   digitalWrite(BCDOutput_A, LOW);  
@@ -325,12 +324,16 @@ void SetOutputByFrequency(long Frequency)
 {
   int Band = GetBandFromFrequency(Frequency);
 
-  #ifdef DEBUG
-    Serial.print("Output set to band:");
-    Serial.println(Band);
-  #endif
+  if (CurrentBand != Band)
+  {
+    CurrentBand = Band;
+    #ifdef DEBUG
+      Serial.print("Output changed to band:");
+      Serial.println(CurrentBand);
+    #endif
 
-  SetOutputByBand(Band);
+    SetOutputByBand(CurrentBand);
+  }
 }
 
 // Sets the output pins from a given band
