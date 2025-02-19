@@ -49,10 +49,11 @@
 #define SERIAL2_TXD 17 // TX Pin to Kenwood COM Port
 #define SERIAL2_BAUD 9600 // Kenwood COM Port speed
 #define LED_BUILTIN 2 // Build in LED, used for debug and status
-#define BCDOutput_A 32 // BCD Output A Pin
+#define BCDOutput_A 25 // BCD Output A Pin
 #define BCDOutput_B 33 // BCD Output B Pin
-#define BCDOutput_C 25 // BCD Output C Pin
-#define BCDOutput_D 26 // BCD Output D Pin
+#define BCDOutput_C 32 // BCD Output C Pin
+#define BCDOutput_D 27 // BCD Output D Pin
+#define BCDOutput_I 26 // Interlock
 
 static int TXVFO = 0; // Our Transmitting VFO, 0 = VFO A, 1 = VFO B
 static long VFOACurrentFreq = 0; // Our current VFO A frequency in hz
@@ -81,13 +82,14 @@ void setup() {
   pinMode(BCDOutput_B, OUTPUT);
   pinMode(BCDOutput_C, OUTPUT);
   pinMode(BCDOutput_D, OUTPUT);
+  pinMode(BCDOutput_I, OUTPUT);
   
   ResetSerialAndOutputs();
 
   // Setup our debug output
   #ifdef DEBUG
     Serial.begin(115200);    
-  #endif
+  #endif 
 
   ConnectToTS990S();
 }
@@ -137,6 +139,7 @@ void ResetSerialAndOutputs()
   digitalWrite(BCDOutput_B, LOW);  
   digitalWrite(BCDOutput_C, LOW); 
   digitalWrite(BCDOutput_D, LOW); 
+  digitalWrite(BCDOutput_I, LOW); 
   
 }
 
